@@ -1,0 +1,129 @@
+<!-- templates/index.html v1.1.1 - Last modified: 2025-03-31 -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Laundry Status</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>2290 N Point Laundry Room <a href="/admin" style="text-decoration: none; color: inherit;">Status</a></h1>
+        <div id="operating-status">
+            <p id="operating-text"></p>
+            <p id="local-time" style="font-size: 0.8em;"></p>
+        </div>
+
+        <div class="machine-status">
+            <div class="washer-header">
+                <h2>WASHER</h2>
+                <div class="battery-container">
+                    <div style="text-align: center;">
+                        <span class="battery-label">Sensor</span>
+                        <!-- Add temperature display -->
+                        <div class="sensor-info">
+                            <div id="washer-voltage" class="sensor-reading"></div>
+                            <div id="washer-temperature" class="sensor-reading"></div>
+                        </div>
+                    </div>
+                    <div id="washer-battery" class="battery"><div class="battery-bar"></div></div>
+                </div>
+            </div>
+            <p id="washer-status" class="{{ sensors['washer'].status }}">{{ sensors['washer'].message }}</p>
+        </div>
+
+        <div class="machine-status">
+            <div class="washer-header">
+                <h2>DRYER</h2>
+                <div class="battery-container">
+                    <div style="text-align: center;">
+                        <span class="battery-label">Sensor</span>
+                        <!-- Add temperature display -->
+                        <div class="sensor-info">
+                            <div id="dryer-voltage" class="sensor-reading"></div>
+                            <div id="dryer-temperature" class="sensor-reading"></div>
+                        </div>
+                    </div>
+                    <div id="dryer-battery" class="battery"><div class="battery-bar"></div></div>
+                </div>
+            </div>
+            <p id="dryer-status" class="{{ sensors['dryer'].status if 'dryer' in sensors else 'free' }}">{{ sensors['dryer'].message if 'dryer' in sensors else 'Dryer data not available' }}</p>
+        </div>
+
+        <div id="popular-times">
+            <div class="popular-times-header">
+                <h2 id="popular-times-heading">Popular Times</h2>
+                <div class="view-toggle">
+                    <button id="day-view-btn" class="view-btn active">Day</button>
+                    <button id="week-view-btn" class="view-btn">Week</button>
+                </div>
+            </div>
+            <!-- Day View (Default) -->
+            <div id="day-view" class="chart-container">
+                <canvas id="popularTimesChart"></canvas>
+                <div class="day-indicator-dots" id="day-indicator-dots">
+                    <!-- Day indicator dots will be added dynamically -->
+                </div>
+            </div>
+            <!-- Week View (Initially Hidden) -->
+            <div id="week-view" class="week-chart-container" style="display: none;">
+                <div class="week-grid" id="week-grid">
+                    <!-- Week view grid will be populated dynamically -->
+                </div>
+                <div class="week-legend">
+                    <div class="legend-item">
+                        <div class="legend-color not-busy"></div>
+                        <span>Not busy</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color not-too-busy"></div>
+                        <span>Not too busy</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color little-busy"></div>
+                        <span>A little busy</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color busy"></div>
+                        <span>Busy</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Today button (only shown in week view) -->
+            <div class="today-button-container" id="today-btn-container" style="display: none;">
+                <button id="today-btn" class="today-btn">Today</button>
+            </div>
+        </div>
+        <div id="version">v1.1.1</div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Initialize with washer status data
+        const initialWasherStatus = {
+            status: "{{ sensors['washer'].status }}",
+            message: "{{ sensors['washer'].message }}",
+            voltage: {% if sensors['washer'].voltage is not none %}{{ sensors['washer'].voltage }}{% else %}null{% endif %},
+            temperature: {% if sensors['washer'].temperature is not none %}{{ sensors['washer'].temperature }}{% else %}null{% endif %}
+        };
+        
+        // Initialize with dryer status data if available
+        const initialDryerStatus = {
+            status: "{{ sensors['dryer'].status if 'dryer' in sensors else 'free' }}",
+            message: "{{ sensors['dryer'].message if 'dryer' in sensors else 'Dryer data not available' }}",
+            voltage: {% if 'dryer' in sensors and sensors['dryer'].voltage is not none %}{{ sensors['dryer'].voltage }}{% else %}null{% endif %},
+            temperature: {% if 'dryer' in sensors and sensors['dryer'].temperature is not none %}{{ sensors['dryer'].temperature }}{% else %}null{% endif %}
+        };
+        
+        // Initialize refresh interval
+        const refreshInterval = 5;
+        
+        // Initialize the page with the provided data
+        initializeStatus(initialWasherStatus, initialDryerStatus);
+        
+        // Set up periodic refresh
+        setInterval(refreshStatus, refreshInterval * 1000);
+    </script>
+</body>
+</html>

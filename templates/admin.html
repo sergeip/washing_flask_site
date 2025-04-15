@@ -1,0 +1,305 @@
+<!-- templates/admin.html v1.1.1 - Last modified: 2025-03-31 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-size: 14px;
+            color: #212529;
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            color: #212529;
+        }
+        
+        .sensor-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        
+        .sensor-table th, .sensor-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+            color: #212529; /* Explicit text color for light background */
+            opacity: 1; /* Ensure full opacity */
+        }
+        
+        .sensor-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+            color: #212529; /* Darker text for headers */
+            opacity: 1; /* Ensure full opacity */
+        }
+        
+        .sensor-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .sensor-form {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #212529;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #212529;
+            background-color: #fff;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 0.85em;
+        }
+        
+        .btn:hover {
+            background-color: #3a7bc8;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            margin-left: 2px;
+        }
+        
+        .btn-danger:hover {
+            background-color: #bd2130;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .flash-message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        .flash-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .flash-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .add-type-form {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f0f7ff;
+            border-radius: 4px;
+            border: 1px solid #cce5ff;
+            font-size: 0.9em;
+        }
+        
+        .status-active {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .status-inactive {
+            color: #dc3545;
+        }
+        
+        .status-unknown {
+            color: #6c757d;
+        }
+        
+        .back-link {
+            margin-bottom: 20px;
+            display: inline-block;
+            text-decoration: none;
+            color: #4a90e2;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        h1, h2 {
+            color: #333;
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <a href="/" class="back-link">← Back to Dashboard</a>
+        <h1>Sensor Management</h1>
+        
+        <!-- Flash Messages -->
+        {% if get_flashed_messages() %}
+        <div class="flash-messages">
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+                <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- Add New Sensor Type Form -->
+        <div class="add-type-form">
+            <h2>Add New Sensor Type</h2>
+            <form action="{{ url_for('add_sensor_type') }}" method="post">
+                <div class="form-group">
+                    <label for="new_sensor_type">New Sensor Type Name:</label>
+                    <input type="text" id="new_sensor_type" name="new_sensor_type" required 
+                           placeholder="e.g., washer, dryer, dishwasher, etc.">
+                </div>
+                <button type="submit" class="btn">Add Sensor Type</button>
+            </form>
+        </div>
+        
+        <!-- Sensors Table -->
+        <h2>Registered Sensors</h2>
+        <div style="text-align: right; color: #777; font-size: 0.8em; margin-bottom: 5px;">Version: {{ version }}</div>
+        <table class="sensor-table">
+            <thead>
+                <tr>
+                    <th>MAC Address</th>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Created</th>
+                    <th>Last Seen</th>
+                    <th>Last Time Sync</th>
+                    <th>Battery (V)</th>
+                    <th>Data Points</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sensor in sensors %}
+                <tr>
+                    <td>{{ sensor.mac_address }}</td>
+                    <td>{{ sensor.sensor_type }}</td>
+                    <td>{{ sensor.name or '-' }}</td>
+                    <td>{{ sensor.location or '-' }}</td>
+                    <td>{{ sensor.created_at.strftime('%Y-%m-%d %H:%M:%S') if sensor.created_at else 'N/A' }}</td>
+                    <td>{{ sensor.last_seen.strftime('%Y-%m-%d %H:%M:%S') if sensor.last_seen else 'Never' }}</td>
+                    <td>{{ sensor.last_time_sync.strftime('%Y-%m-%d %H:%M:%S') if sensor.last_time_sync else 'Never' }}</td>
+                    <td>{{ sensor.battery|round(2) if sensor.battery else '-' }}</td>
+                    <td>{{ sensor.data_count }}</td>
+                    <td class="status-{{ sensor.status }}">{{ sensor.status }}</td>
+                    <td style="white-space: nowrap;">
+                        <div class="btn-group">
+                            <button class="btn btn-sm" onclick="showEditForm('{{ sensor.id }}')">Edit</button>
+                            {% if sensor.status == 'inactive' %}
+                            <form style="display:inline;" action="{{ url_for('delete_sensor', sensor_id=sensor.id) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this sensor?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                <tr id="edit-form-{{ sensor.id }}" style="display: none;">
+                    <td colspan="11">
+                        <form class="sensor-form" action="{{ url_for('update_sensor', sensor_id=sensor.id) }}" method="post">
+                            <div class="form-group">
+                                <label for="sensor_type_{{ sensor.id }}">Sensor Type:</label>
+                                <select id="sensor_type_{{ sensor.id }}" name="sensor_type" required>
+                                    {% for type in sensor_types %}
+                                        <option value="{{ type }}" {% if type == sensor.sensor_type %}selected{% endif %}>{{ type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="name_{{ sensor.id }}">Name:</label>
+                                <input type="text" id="name_{{ sensor.id }}" name="name" value="{{ sensor.name or '' }}" placeholder="Friendly name">
+                            </div>
+                            <div class="form-group">
+                                <label for="location_{{ sensor.id }}">Location:</label>
+                                <input type="text" id="location_{{ sensor.id }}" name="location" value="{{ sensor.location or '' }}" placeholder="Location description">
+                            </div>
+                            <div class="form-group">
+                                <label for="status_{{ sensor.id }}">Status:</label>
+                                <select id="status_{{ sensor.id }}" name="status" required>
+                                    <option value="active" {% if sensor.status == 'active' %}selected{% endif %}>Active</option>
+                                    <option value="inactive" {% if sensor.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn">Save Changes</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideEditForm('{{ sensor.id }}')">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="11">No sensors registered yet. They will appear here when detected.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        function showEditForm(sensorId) {
+            document.getElementById('edit-form-' + sensorId).style.display = 'table-row';
+        }
+        
+        function hideEditForm(sensorId) {
+            document.getElementById('edit-form-' + sensorId).style.display = 'none';
+        }
+    </script>
+</body>
+</html>

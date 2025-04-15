@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  laundry_app:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - /home/sergei/PycharmProjects/laundry_appvib.db:/app/vib.db
+      - ./:/app
+    environment:
+      - DATABASE_URL=sqlite:///vib.db
+    restart: always

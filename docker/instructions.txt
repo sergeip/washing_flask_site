@@ -1,0 +1,96 @@
+# Docker Deployment for Laundry App on Raspberry Pi
+
+This document provides instructions for deploying the Laundry App on a Raspberry Pi using Docker, with access to an existing SQLite database located at /home/sergei/PycharmProjects/laundry_appvib.db.
+
+## Dockerfile (Already created)
+
+The Dockerfile is configured to:
+- Use Python 3.11 slim as the base image
+- Install required system dependencies (gcc, sqlite3)
+- Install Python dependencies from requirements.txt
+- Copy application code to the container
+- Run the application using gunicorn
+
+## Docker Compose (Already created)
+
+The docker-compose.yml file is configured to:
+- Build the application from the Dockerfile
+- Map port 5000 from the container to port 5000 on the host
+- Mount the SQLite database from /home/sergei/PycharmProjects/laundry_appvib.db to /app/vib.db in the container
+- Mount the current directory to /app in the container for easy updates
+- Set the DATABASE_URL environment variable to use the SQLite database
+- Automatically restart the container if it crashes
+
+## Deployment Instructions
+
+1. Copy your entire project files to a directory on your Raspberry Pi
+2. Place the Dockerfile and docker-compose.yml files in the project root
+3. Run the following commands:
+
+```bash
+# Build and start the container
+docker-compose up -d
+
+# Check logs if needed
+docker-compose logs -f
+```
+
+## Running Without Docker Compose
+
+If you prefer to run without Docker Compose, you can use these Docker commands:
+
+```bash
+# Build the Docker image
+docker build -t laundry_app .
+
+# Run the container
+docker run -d \
+  --name laundry_app_container \
+  -p 5000:5000 \
+  -v /home/sergei/PycharmProjects/laundry_appvib.db:/app/vib.db \
+  -v $(pwd):/app \
+  -e DATABASE_URL=sqlite:///vib.db \
+  --restart always \
+  laundry_app
+```
+
+## Accessing the Application
+
+Once deployed, the application will be accessible at:
+- http://[raspberry-pi-ip]:5000
+
+## Updates and Maintenance
+
+To update the application:
+
+```bash
+# Pull the latest code changes (if using git)
+git pull
+
+# Rebuild and restart the container
+docker-compose down
+docker-compose up -d --build
+```
+
+## Troubleshooting
+
+1. If the container can't access the database, check permissions on the SQLite file:
+   ```bash
+   sudo chmod 644 /home/sergei/PycharmProjects/laundry_appvib.db
+   sudo chown 1000:1000 /home/sergei/PycharmProjects/laundry_appvib.db
+   ```
+
+2. To check container logs:
+   ```bash
+   docker logs laundry_app_container
+   ```
+
+3. To access the container shell:
+   ```bash
+   docker exec -it laundry_app_container bash
+   ```
+
+4. If the container fails to start, check if port 5000 is already in use:
+   ```bash
+   sudo netstat -tuln | grep 5000
+   ```

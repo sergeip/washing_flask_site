@@ -1,0 +1,10 @@
+boto3
+email-validator
+flask
+flask-sqlalchemy
+gunicorn
+psycopg2-binary
+pytz
+serial
+sqlalchemy
+twilio

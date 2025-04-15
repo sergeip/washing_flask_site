@@ -1,0 +1,438 @@
+/* styles.css v1.2.0 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+.free { color: green; }
+.busy { color: red; }
+.open { color: green; }
+.closed { color: red; }
+
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+    position: relative;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.machine-status {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    position: relative;
+    background-color: #fafafa;
+}
+
+#operating-status {
+    margin: 10px 0;
+    font-size: 1.2em;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+}
+
+#popular-times {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fafafa;
+}
+
+.popular-times-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#popular-times h2 {
+    margin: 0;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+}
+
+.day-selector {
+    position: relative;
+    margin-left: 8px;
+    cursor: pointer;
+    font-size: 0.8em;
+    display: inline-flex;
+}
+
+.day-selector-toggle {
+    display: flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+.day-selector-toggle:hover {
+    background-color: #e0e0e0;
+}
+
+.day-selector-icon {
+    margin-left: 5px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #666;
+}
+
+.day-selector-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    width: 120px;
+    display: none;
+    margin-top: 5px;
+}
+
+.day-selector-dropdown.show {
+    display: block;
+}
+
+.day-selector-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.day-selector-item:hover {
+    background-color: #f5f5f5;
+}
+
+.day-selector-item.active {
+    background-color: #e9e9e9;
+    font-weight: bold;
+}
+
+.day-indicator-dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 5px;
+}
+
+.day-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ccc;
+    cursor: pointer;
+}
+
+.day-dot.active {
+    background-color: #333;
+}
+
+.chart-container {
+    position: relative;
+    height: 100px;
+    width: 100%;
+}
+
+@keyframes breathe {
+    0% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.4; }
+}
+
+.washer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.battery-container {
+    display: flex;
+    align-items: center;
+}
+
+.battery-label {
+    margin-right: 5px;
+    font-size: 0.9em;
+}
+
+.battery {
+    width: 10px;
+    height: 20px;
+    border: 1px solid #000;
+    position: relative;
+    display: inline-block;
+}
+
+.battery::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 3px;
+    width: 4px;
+    height: 2px;
+    background: #000;
+}
+
+.battery-bar {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    background: green;
+}
+
+.battery-0 .battery-bar { height: 0%; background: #ff3b30; } /* Bright red for empty */
+.battery-1 .battery-bar { height: 25%; background: #ff9500; } /* Orange for 1/4 full */
+.battery-2 .battery-bar { height: 50%; background: #ffcc00; } /* Yellow for half full */
+.battery-3 .battery-bar { height: 75%; background: #4cd964; } /* Same green as full battery */
+.battery-4 .battery-bar { height: 100%; background: #4cd964; } /* Bright green for full battery */
+
+.sensor-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.sensor-reading {
+    font-size: 0.7em;
+    color: #666;
+}
+
+#washer-temperature::before,
+#dryer-temperature::before {
+    content: '🌡️ ';
+}
+
+#washer-voltage::before,
+#dryer-voltage::before {
+    content: '⚡ ';
+}
+
+#version {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 0.6em;
+    color: #666;
+}
+
+/* Week View Styles */
+.view-toggle {
+    display: flex;
+    gap: 5px;
+}
+
+.view-btn {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+    transition: all 0.2s;
+}
+
+.view-btn.active {
+    background-color: #4a90e2;
+    color: white;
+    border-color: #3a80d2;
+}
+
+.week-chart-container {
+    position: relative;
+    width: 100%;
+}
+
+.week-grid {
+    display: grid;
+    grid-template-columns: 60px repeat(15, 1fr);
+    grid-template-rows: repeat(8, 35px); /* Increased from 7 to 8 rows to accommodate header + 7 days */
+    gap: 2px;
+    margin-bottom: 15px;
+    min-height: 320px; /* Ensure enough height for all days */
+}
+
+.day-label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #555;
+}
+
+.hour-label {
+    grid-column: span 15;
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    border-bottom: 1px solid #eee;
+    font-size: 0.65em;
+    color: #777;
+    padding-bottom: 4px;
+    margin-bottom: 5px;
+}
+
+.hour-tick {
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.week-cell {
+    border-radius: 2px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    font-size: 0.7em;
+    font-weight: bold;
+}
+
+.week-cell:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    color: white;
+}
+
+.week-cell.not-busy {
+    background-color: #85e085;
+}
+
+.week-cell.not-too-busy {
+    background-color: #ffeb99;
+}
+
+.week-cell.little-busy {
+    background-color: #ffb366;
+}
+
+.week-cell.busy {
+    background-color: #ff6666;
+}
+
+.week-cell.current {
+    animation: pulse 1.5s infinite;
+    box-shadow: 0 0 0 2px #4a90e2;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.5); }
+    50% { box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.8); }
+    100% { box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.5); }
+}
+
+.week-legend {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.8em;
+    color: #555;
+}
+
+.legend-color {
+    width: 15px;
+    height: 15px;
+    border-radius: 2px;
+    margin-right: 5px;
+}
+
+.legend-color.not-busy {
+    background-color: #85e085;
+}
+
+.legend-color.not-too-busy {
+    background-color: #ffeb99;
+}
+
+.legend-color.little-busy {
+    background-color: #ffb366;
+}
+
+.legend-color.busy {
+    background-color: #ff6666;
+}
+
+.today-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.today-btn {
+    padding: 5px 15px;
+    border: 1px solid #4a90e2;
+    background-color: #f0f7ff;
+    color: #4a90e2;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.today-btn:hover {
+    background-color: #e0f0ff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .container {
+        margin: 10px;
+        padding: 10px;
+    }
+    
+    h1 {
+        font-size: 1.5em;
+    }
+    
+    .machine-status, #popular-times {
+        padding: 10px;
+    }
+    
+    .week-grid {
+        grid-template-columns: 40px repeat(15, 1fr);
+        grid-template-rows: repeat(8, 30px); /* Updated to match the 8 rows */
+        min-height: 280px; /* Adjusted for mobile */
+    }
+    
+    .day-label {
+        font-size: 0.7em;
+        padding-right: 5px;
+    }
+    
+    .hour-label {
+        font-size: 0.6em;
+    }
+    
+    .legend-item {
+        font-size: 0.7em;
+    }
+    
+    .legend-color {
+        width: 12px;
+        height: 12px;
+    }
+}
